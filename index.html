@@ -158,21 +158,52 @@ body.scheme-ink.dark {
   --swatch:linear-gradient(135deg,#f0f0f0 50%,#0e0e0e 50%);
 }
 
-/* ── Parchment dark (the original dark mode, now as scheme default dark) ── */
+/* ── MERIDIAN — hellfire, oxblood, ash, ember ── */
+body.scheme-meridian {
+  --bg:#e4c8b4; --text:#1a0806; --muted:#8a4a38;
+  --danger-low:#c06820; --danger-mid:#a02810; --danger-high:#6a0a08;
+  --flow:#8a2a18; --flow-bg:#e0c0a8; --idea-bg:#2a0604;
+  --peace-bg:#dec4b0; --peace-text:#1a0806; --peace-muted:#8a4a38; --peace-accent:#9a2a18;
+  --border-subtle:rgba(26,8,6,.16); --border-med:rgba(26,8,6,.24);
+  --surface-hover:rgba(26,8,6,.05); --surface-active:rgba(26,8,6,.03);
+  --toggle-track:rgba(26,8,6,.20); --toggle-thumb:#e4c8b4;
+  --warn-low-bg:#dcb89c; --warn-mid-bg:#d0a080; --warn-high-bg:#b87868;
+  --pulse-a:#b87868; --pulse-b:#a86858;
+  --dead-bg:#140402; --dead-text:#3a0a08;
+  --end-bg:#120402; --end-h:#8a1a10; --end-sub:#5a0a08;
+  --streak-hot:#c02818; --chaos-c:#9a2818; --warmup-c:#8a2a18; --bd-dot:#8a4a38;
+  --swatch:linear-gradient(135deg,#e4c8b4 50%,#1a0806 50%);
+}
+body.scheme-meridian.dark {
+  --bg:#0e0402; --text:#c08870; --muted:#6a2818;
+  --flow:#d04828; --flow-bg:#140604;
+  --peace-bg:#100604; --peace-text:#b87860; --peace-muted:#5a2010; --peace-accent:#d04828;
+  --border-subtle:rgba(200,120,80,.14); --border-med:rgba(200,120,80,.22);
+  --surface-hover:rgba(200,120,80,.06); --surface-active:rgba(200,120,80,.04);
+  --toggle-track:rgba(200,120,80,.20); --toggle-thumb:#c08870;
+  --warn-low-bg:#1a0804; --warn-mid-bg:#240a06; --warn-high-bg:#340c08;
+  --pulse-a:#340c08; --pulse-b:#40100a;
+  --dead-bg:#060200; --dead-text:#2a0a06;
+  --end-bg:#060200; --end-h:#a02818; --end-sub:#6a1810;
+  --streak-hot:#e04828; --chaos-c:#d04828; --warmup-c:#c03818; --bd-dot:#d04828;
+  --swatch:linear-gradient(135deg,#e4c8b4 50%,#0e0402 50%);
+}
+
+/* ── Parchment dark — warm candlelit, differentiated from Ocean ── */
 body.dark {
-  --bg:#0a0e1a; --text:#c8d0e0; --muted:#5a6888;
+  --bg:#1a1510; --text:#d8cdb8; --muted:#6a5e4a;
   --danger-low:#c4982e; --danger-mid:#d06828; --danger-high:#d03838;
-  --flow:#3ea898; --flow-bg:#0d1520; --idea-bg:#141e38;
-  --peace-bg:#0c1022; --peace-text:#b0bcd8; --peace-muted:#4a5878; --peace-accent:#5a82c0;
-  --border-subtle:rgba(140,170,220,.12); --border-med:rgba(140,170,220,.18);
-  --surface-hover:rgba(140,170,220,.07); --surface-active:rgba(140,170,220,.05);
-  --toggle-track:rgba(140,170,220,.18); --toggle-thumb:#c8d0e0;
-  --warn-low-bg:#111828; --warn-mid-bg:#18182a; --warn-high-bg:#1e1220;
-  --pulse-a:#1e1220; --pulse-b:#241428;
-  --dead-bg:#060810; --dead-text:#2a2040;
-  --end-bg:#06080e; --end-h:#6a5080; --end-sub:#4a3868;
-  --streak-hot:#d08838; --chaos-c:#6a8ac0; --warmup-c:#4a9a8a; --bd-dot:#4a9a8a;
-  --swatch:linear-gradient(135deg,#f6f1e7 50%,#0a0e1a 50%);
+  --flow:#a88848; --flow-bg:#1e1812; --idea-bg:#2a2015;
+  --peace-bg:#1c1612; --peace-text:#c8bda8; --peace-muted:#5a4e3a; --peace-accent:#8aa0b8;
+  --border-subtle:rgba(216,205,184,.12); --border-med:rgba(216,205,184,.18);
+  --surface-hover:rgba(216,205,184,.06); --surface-active:rgba(216,205,184,.04);
+  --toggle-track:rgba(216,205,184,.18); --toggle-thumb:#d8cdb8;
+  --warn-low-bg:#221a10; --warn-mid-bg:#2a1e14; --warn-high-bg:#2e1e18;
+  --pulse-a:#2e1e18; --pulse-b:#34221c;
+  --dead-bg:#0a0806; --dead-text:#2a2018;
+  --end-bg:#0a0806; --end-h:#8a7048; --end-sub:#5a4828;
+  --streak-hot:#d08838; --chaos-c:#a88848; --warmup-c:#8a9878; --bd-dot:#8a9878;
+  --swatch:linear-gradient(135deg,#f6f1e7 50%,#1a1510 50%);
 }
 body.dark { background:var(--bg); color:var(--text); }
 body.dark.peace     { background:var(--peace-bg); color:var(--peace-text); }
@@ -235,13 +266,6 @@ body.peace #streak-display.hot { color:var(--peace-accent); }
 #flow-indicator.visible { opacity:1; }
 #flow-dot { width:6px; height:6px; border-radius:50%; background:var(--flow); animation:flowGlow 2s ease infinite; }
 #flow-label { font-family:'EB Garamond',serif; font-size:12px; letter-spacing:.1em; color:var(--flow); text-transform:uppercase; }
-
-#body-double-display {
-  font-family:'EB Garamond',serif; font-size:12px; letter-spacing:.07em; color:var(--muted);
-  display:none; align-items:center; gap:6px;
-}
-#body-double-display.visible { display:flex; }
-#body-double-dot { width:5px; height:5px; border-radius:50%; background:var(--bd-dot); opacity:.7; }
 
 #chaos-badge {
   font-family:'EB Garamond',serif; font-size:11px; letter-spacing:.12em; text-transform:uppercase;
@@ -563,6 +587,49 @@ body.dark #death-confirm { background:rgba(6,8,16,.95); }
 .win-stats  { font-family:'Lora',serif; font-size:14px; font-style:italic; color:var(--muted); margin-bottom:4px; }
 .win-streak { font-family:'EB Garamond',serif; font-size:13px; letter-spacing:.06em; color:var(--streak-hot); margin-bottom:4px; }
 .win-wpm    { font-family:'EB Garamond',serif; font-size:13px; letter-spacing:.06em; color:var(--muted); margin-bottom:20px; }
+#win-note-wrap { width:100%; max-width:460px; margin:0 auto 24px; padding:0 20px; }
+#win-note-input {
+  width:100%; background:transparent; border:none;
+  border-bottom:1px solid var(--border-subtle);
+  font-family:'Lora',serif; font-size:14px; font-style:italic;
+  color:var(--text); padding:8px 0; outline:none; text-align:center;
+}
+#win-note-input::placeholder { color:var(--muted); opacity:.6; }
+#win-note-input:focus { border-bottom-color:var(--border-med); }
+
+/* Archive section */
+#archive-section { margin-top:36px; padding-top:24px; border-top:1px solid var(--border-subtle); }
+#archive-list { margin-top:12px; max-height:300px; overflow-y:auto; }
+.archive-item {
+  padding:10px 0; border-bottom:1px solid var(--border-subtle);
+  cursor:pointer; transition:opacity .2s;
+}
+.archive-item:hover { opacity:.7; }
+.archive-item:last-child { border-bottom:none; }
+.archive-date {
+  font-family:'EB Garamond',serif; font-size:11px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--muted);
+}
+.archive-note {
+  font-family:'Lora',serif; font-size:13px; font-style:italic;
+  color:var(--text); margin-top:2px;
+}
+.archive-meta {
+  font-family:'EB Garamond',serif; font-size:11px; color:var(--muted); margin-top:2px;
+}
+#archive-reader {
+  position:fixed; inset:0; background:var(--bg); z-index:220;
+  display:none; flex-direction:column; padding:40px 32px; overflow-y:auto;
+}
+#archive-reader.show { display:flex; }
+#archive-reader-header { display:flex; justify-content:space-between; align-items:center; max-width:640px; margin:0 auto 24px; width:100%; }
+#archive-reader-title { font-family:'EB Garamond',serif; font-size:16px; color:var(--text); }
+#archive-reader-close { font-size:24px; background:none; border:none; color:var(--muted); cursor:pointer; }
+#archive-reader-text {
+  max-width:640px; margin:0 auto; width:100%;
+  font-family:inherit; font-size:17px; line-height:1.8; color:var(--text);
+  white-space:pre-wrap;
+}
 #win-text-wrap { width:100%; max-width:560px; margin-bottom:24px; }
 #win-text-area {
   width:100%; height:140px; background:var(--surface-active);
@@ -992,11 +1059,6 @@ body.keyboard-open #danger-bar-wrap { padding-top:6px; }
         <span class="toggle-label">Typing sounds</span>
       </label>
       <label class="toggle-item">
-        <input type="checkbox" id="toggle-bodydobule" checked>
-        <div class="toggle-track"><div class="toggle-thumb"></div></div>
-        <span class="toggle-label">Body doubling</span>
-      </label>
-      <label class="toggle-item">
         <input type="checkbox" id="toggle-chaos">
         <div class="toggle-track"><div class="toggle-thumb"></div></div>
         <span class="toggle-label">Chaos mode</span>
@@ -1020,6 +1082,7 @@ body.keyboard-open #danger-bar-wrap { padding-top:6px; }
           <button class="scheme-btn" data-scheme="scheme-flora" title="Flora"><span class="scheme-swatch" style="background:linear-gradient(135deg,#edf2ea 50%,#1e2a1a 50%)"></span></button>
           <button class="scheme-btn" data-scheme="scheme-ember" title="Ember"><span class="scheme-swatch" style="background:linear-gradient(135deg,#f4ede4 50%,#2e1e14 50%)"></span></button>
           <button class="scheme-btn" data-scheme="scheme-ink" title="Ink"><span class="scheme-swatch" style="background:linear-gradient(135deg,#f0f0f0 50%,#111111 50%)"></span></button>
+          <button class="scheme-btn" data-scheme="scheme-meridian" title="Meridian"><span class="scheme-swatch" style="background:linear-gradient(135deg,#e4c8b4 50%,#1a0806 50%)"></span></button>
         </div>
       </div>
       <div class="font-group">
@@ -1061,7 +1124,7 @@ body.keyboard-open #danger-bar-wrap { padding-top:6px; }
       <span id="idea-count"></span>
     </div>
     <div id="right-stats">
-      <div id="body-double-display"><div id="body-double-dot"></div><span id="body-double-text"></span></div>
+      <div id="body-double-display" style="display:none"></div>
       <span id="chaos-badge">Chaos</span>
       <span id="warmup-badge">Warmup</span>
       <span id="streak-display"></span>
@@ -1120,6 +1183,9 @@ body.keyboard-open #danger-bar-wrap { padding-top:6px; }
   <p class="win-stats"  id="win-stats"></p>
   <p class="win-streak" id="win-streak-el"></p>
   <p class="win-wpm"    id="win-wpm"></p>
+  <div id="win-note-wrap">
+    <input type="text" id="win-note-input" placeholder="what was this about? (optional)" maxlength="200" autocomplete="off" spellcheck="false">
+  </div>
   <div id="win-ideas" style="display:none">
     <span id="win-ideas-label">Ideas captured this session</span>
     <ul id="win-ideas-list"></ul>
@@ -1129,10 +1195,10 @@ body.keyboard-open #danger-bar-wrap { padding-top:6px; }
     <textarea id="win-text-area" readonly spellcheck="false"></textarea>
   </div>
   <div class="end-btns">
-    <button class="win-btn primary" onclick="saveText()">Download</button>
+    <button class="win-btn primary" onclick="saveText();flushPendingSession();">Download</button>
     <button class="win-btn" onclick="showWinText()">Read &amp; copy</button>
-    <button class="win-btn" onclick="openStats()">Your writing</button>
-    <button class="win-btn" onclick="backToSetup()">Again</button>
+    <button class="win-btn" onclick="flushPendingSession();openStats();">Your writing</button>
+    <button class="win-btn" onclick="flushPendingSession();backToSetup();">Again</button>
   </div>
 </div>
 
@@ -1171,7 +1237,7 @@ body.keyboard-open #danger-bar-wrap { padding-top:6px; }
         </div>
         <div class="stat-card">
           <span class="stat-value" id="stat-first-vs-now">—</span>
-          <span class="stat-label">vs. your first week</span>
+          <span class="stat-label">first week → this week</span>
         </div>
       </div>
       <div id="stats-hours">
@@ -1182,6 +1248,10 @@ body.keyboard-open #danger-bar-wrap { padding-top:6px; }
         </div>
       </div>
       <p id="stat-pace"></p>
+      <div id="archive-section">
+        <span class="stat-section-label">Your sessions</span>
+        <div id="archive-list"></div>
+      </div>
       <div id="device-section">
         <span class="stat-section-label">Sync across devices</span>
         <div id="device-id-row">
@@ -1200,6 +1270,15 @@ body.keyboard-open #danger-bar-wrap { padding-top:6px; }
 </div>
 
 <div id="saved-flash">Saved — check your downloads.</div>
+
+<!-- ══ ARCHIVE READER ══ -->
+<div id="archive-reader">
+  <div id="archive-reader-header">
+    <span id="archive-reader-title"></span>
+    <button id="archive-reader-close" onclick="closeArchiveReader()" aria-label="Close">&times;</button>
+  </div>
+  <div id="archive-reader-text"></div>
+</div>
 
 <script>
 // ══════════════════════════════════════════════
@@ -1277,16 +1356,9 @@ function playIdeaPing(){
 // ══════════════════════════════════════════════
 //  BODY DOUBLING
 // ══════════════════════════════════════════════
-let bodyDoubleTimer=null, useBodyDouble=true;
-function getWriterCount(){ const h=new Date().getHours(); return (h>=7&&h<=10?24:h>=19&&h<=23?31:h<=5?6:14)+Math.floor(Math.random()*8)-3; }
-function startBodyDoubling(){
-  if(!useBodyDouble)return;
-  const el=document.getElementById('body-double-display'), txt=document.getElementById('body-double-text');
-  el.classList.add('visible');
-  function u(){ txt.textContent=Math.max(3,getWriterCount())+' writing now'; } u();
-  bodyDoubleTimer=setInterval(u,17000+Math.random()*8000);
-}
-function stopBodyDoubling(){ clearInterval(bodyDoubleTimer); document.getElementById('body-double-display').classList.remove('visible'); }
+// body doubling removed
+function startBodyDoubling(){}
+function stopBodyDoubling(){}
 
 // ══════════════════════════════════════════════
 //  MILESTONES
@@ -1470,7 +1542,7 @@ function setBodyClass(cls){
 
 function applyScheme(scheme){
   // Remove old scheme
-  document.body.classList.remove('scheme-ocean','scheme-flora','scheme-ember','scheme-ink');
+  document.body.classList.remove('scheme-ocean','scheme-flora','scheme-ember','scheme-ink','scheme-meridian');
   currentScheme = scheme;
   if(scheme) document.body.classList.add(scheme);
   localStorage.setItem('wod_scheme', scheme);
@@ -1612,7 +1684,6 @@ document.querySelectorAll('#grace-opts .opt-btn').forEach(btn=>{
 document.getElementById('toggle-warmup').addEventListener('change',    e=>{ useWarmup=e.target.checked; });
 document.getElementById('toggle-distraction').addEventListener('change',e=>{ useDistraction=e.target.checked; });
 document.getElementById('toggle-sound').addEventListener('change',      e=>{ useSound=e.target.checked; });
-document.getElementById('toggle-bodydobule').addEventListener('change', e=>{ useBodyDouble=e.target.checked; });
 document.getElementById('toggle-paste').addEventListener('change',     e=>{ allowPaste=e.target.checked; });
 document.getElementById('start-btn').addEventListener('click', startSession);
 
@@ -1839,8 +1910,8 @@ function triggerDeath(){
   const wc=countWords(editor.value), elapsed=Math.floor((Date.now()-sessionStart)/1000);
   const avgWpm=wpmSamples.length>0?Math.round(wpmSamples.reduce((a,s)=>a+s.wpm,0)/wpmSamples.length):0;
 
-  // Log failed session — you still showed up
-  logSession({ words:wc, seconds:elapsed, avgWpm, peakWpm, date:Date.now(), hour:new Date().getHours(), mode:peaceMode?'peace':'die', outcome:'died' });
+  // Log failed session — you still showed up (text is gone but effort isn't)
+  logSession({ words:wc, seconds:elapsed, avgWpm, peakWpm, date:Date.now(), hour:new Date().getHours(), mode:peaceMode?'peace':'die', outcome:'died', text:null, note:null });
 
   editor.value=''; setBodyClass('dead');
   distractionOverlay.classList.remove('show'); ideaOverlay.classList.remove('show');
@@ -1861,8 +1932,14 @@ function triggerWin(){
   const newStreak=incrementStreak();
   const avgWpm=wpmSamples.length>0?Math.round(wpmSamples.reduce((a,s)=>a+s.wpm,0)/wpmSamples.length):0;
 
-  // Log session for stats
-  logSession({ words:wc, seconds:elapsed, avgWpm, peakWpm, date:Date.now(), hour:new Date().getHours(), mode:peaceMode?'peace':'die', outcome:'completed' });
+  // Stash session data; log happens when user leaves win screen (so we capture the note)
+  pendingSession = {
+    words:wc, seconds:elapsed, avgWpm, peakWpm,
+    date:Date.now(), hour:new Date().getHours(),
+    mode:peaceMode?'peace':'die', outcome:'completed',
+    text:editor.value
+  };
+  document.getElementById('win-note-input').value='';
 
   winStats.textContent=wc+' words · '+fmtTime(elapsed);
   winStreakEl.textContent=newStreak===1?'First session complete.':newStreak+' days in a row.';
@@ -1875,6 +1952,15 @@ function triggerWin(){
   } else { winIdeasEl.style.display='none'; }
 
   setTimeout(()=>winScreen.classList.add('show'),300);
+}
+
+let pendingSession=null;
+function flushPendingSession(){
+  if(!pendingSession) return;
+  const noteEl=document.getElementById('win-note-input');
+  if(noteEl) pendingSession.note=noteEl.value.trim()||null;
+  logSession(pendingSession);
+  pendingSession=null;
 }
 
 function clearAll(){
@@ -2097,16 +2183,9 @@ function renderStats(){
     const firstDate=sessions[0].date;
     const firstWeekEnd=firstDate+7*86400000;
     const firstWeekWords=sessions.filter(s=>s.date<firstWeekEnd).reduce((a,s)=>a+s.words,0);
-    if(firstWeekWords>0 && wordsWeek>firstWeekWords){
-      const mult=Math.round(wordsWeek/firstWeekWords*10)/10;
-      el.textContent=mult>=2?mult+'× more':'+'+ Math.round((wordsWeek/firstWeekWords-1)*100)+'%';
-    } else if(firstWeekWords>0 && wordsWeek>0){
-      el.textContent='holding steady';
-    } else {
-      el.textContent='keep going';
-    }
+    el.textContent=firstWeekWords.toLocaleString()+' → '+wordsWeek.toLocaleString();
   } else {
-    el.textContent='just starting';
+    el.textContent='—';
   }
 
   // Hour map
@@ -2135,6 +2214,42 @@ function renderStats(){
   } else {
     paceEl.textContent='';
   }
+
+  // Archive — show only sessions with text (local-only storage)
+  const archiveList=document.getElementById('archive-list');
+  archiveList.innerHTML='';
+  const local=getLocalSessions().filter(s=>s.text && s.text.trim().length>0);
+  if(local.length===0){
+    archiveList.innerHTML='<p style="font-family:Lora,serif;font-size:12px;font-style:italic;color:var(--muted);opacity:.5">Completed sessions will appear here.</p>';
+  } else {
+    // Most recent first
+    local.slice().reverse().forEach((s,idx)=>{
+      const item=document.createElement('div');
+      item.className='archive-item';
+      const d=new Date(s.date);
+      const dateStr=d.toLocaleDateString(undefined,{month:'short',day:'numeric'})+' · '+d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
+      const note=s.note?`<div class="archive-note">${escapeHtml(s.note)}</div>`:'';
+      item.innerHTML=`<div class="archive-date">${dateStr}</div>${note}<div class="archive-meta">${s.words.toLocaleString()} words · ${fmtTime(s.seconds)}</div>`;
+      item.addEventListener('click',()=>openArchiveReader(s));
+      archiveList.appendChild(item);
+    });
+  }
+}
+
+function escapeHtml(str){ return String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function openArchiveReader(session){
+  const reader=document.getElementById('archive-reader');
+  const title=document.getElementById('archive-reader-title');
+  const text=document.getElementById('archive-reader-text');
+  const d=new Date(session.date);
+  title.textContent=d.toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'})+(session.note?' — '+session.note:'');
+  text.textContent=session.text||'';
+  text.style.fontFamily=FONT_MAP[chosenFont]||FONT_MAP.lora;
+  reader.classList.add('show');
+}
+function closeArchiveReader(){
+  document.getElementById('archive-reader').classList.remove('show');
 }
 
 // ══════════════════════════════════════════════
