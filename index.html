@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Write or Die">
+<meta name="apple-mobile-web-app-title" content="Break Through">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#f6f1e7" id="meta-theme">
 <meta name="description" content="Stop typing and lose everything. A writing app with consequences.">
-<link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIldyaXRlIG9yIERpZSIsCiAgInNob3J0X25hbWUiOiAiV3JpdGVPckRpZSIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZjVmMmVkIiwKICAidGhlbWVfY29sb3IiOiAiI2Y1ZjJlZCIsCiAgImljb25zIjogW10KfQ==">
-<title>Write or Die</title>
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQnJlYWsgVGhyb3VnaCIsInNob3J0X25hbWUiOiJCcmVha1Rocm91Z2giLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI2Y2ZjFlNyIsInRoZW1lX2NvbG9yIjoiI2Y2ZjFlNyIsImljb25zIjpbXX0K">
+<title>Break Through</title>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=EB+Garamond:ital,wght@0,400;1,400&family=Source+Sans+3:wght@300;400&family=JetBrains+Mono:wght@300;400&family=Literata:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
@@ -989,12 +989,12 @@ body.keyboard-open #danger-bar-wrap { padding-top:6px; }
 <div id="setup">
 
   <div id="mode-selector">
-    <button class="mode-sel-btn active" id="sel-die">Write or Die</button>
+    <button class="mode-sel-btn active" id="sel-die">Break Through</button>
     <button class="mode-sel-btn" id="sel-peace">Peace</button>
   </div>
 
   <div id="setup-hero">
-    <h1 id="setup-title">Write or Die</h1>
+    <h1 id="setup-title">Break Through</h1>
     <p class="subtitle" id="setup-subtitle">Stop typing and lose everything.</p>
     <p id="setup-streak"></p>
     <button id="setup-stats-btn" onclick="openStats()">Your writing</button>
@@ -1457,7 +1457,7 @@ document.getElementById('sel-die').addEventListener('click',()=>{
   document.getElementById('sel-peace').classList.remove('active','peace-sel');
   document.getElementById('sel-die').classList.remove('peace-sel');
   document.getElementById('setup').classList.remove('peace-setup');
-  document.getElementById('setup-title').textContent='Write or Die';
+  document.getElementById('setup-title').textContent='Break Through';
   document.getElementById('setup-subtitle').textContent='Stop typing and lose everything.';
   document.getElementById('start-btn').textContent='Begin';
 });
@@ -1983,7 +1983,7 @@ function saveText(){
   const blob=new Blob([txt],{type:'text/plain'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download='writeordie-'+dayKey()+'.txt';
+  a.download='breakthrough-'+dayKey()+'.txt';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(a.href);
   // Bonus clipboard attempt
