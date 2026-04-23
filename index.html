@@ -1465,7 +1465,7 @@ function getCurrentStreak(){
 // ══════════════════════════════════════════════
 //  AUDIO
 // ══════════════════════════════════════════════
-let audioCtx=null, useSound=true;
+let audioCtx=null, useSound=storage.get('wod_use_sound', true);
 let fxVolume = Math.max(0, Math.min(300, parseInt(localStorage.getItem('wod_volume')) || 100)) / 100;
 function initAudio(){ if(audioCtx)return; audioCtx=new(window.AudioContext||window.webkitAudioContext)(); }
 
@@ -1910,9 +1910,9 @@ thesOverlay.addEventListener('click', e => {
 // ══════════════════════════════════════════════
 //  CHAOS MODE
 // ══════════════════════════════════════════════
-let useChaos=false, chaosHardcore=false;
-document.getElementById('toggle-chaos').addEventListener('change',e=>{ useChaos=e.target.checked; document.getElementById('chaos-sub').classList.toggle('visible',useChaos); });
-document.getElementById('chaos-hardcore').addEventListener('change',e=>{ chaosHardcore=e.target.checked; });
+let useChaos=storage.get('wod_chaos', false), chaosHardcore=storage.get('wod_hardcore', false);
+document.getElementById('toggle-chaos').addEventListener('change',e=>{ useChaos=e.target.checked; document.getElementById('chaos-sub').classList.toggle('visible',useChaos); storage.set('wod_chaos', useChaos); });
+document.getElementById('chaos-hardcore').addEventListener('change',e=>{ chaosHardcore=e.target.checked; storage.set('wod_hardcore', chaosHardcore); });
 
 function handleChaosKeydown(e){
   if(!useChaos||!running)return;
@@ -1942,6 +1942,7 @@ document.getElementById('sel-die').addEventListener('click',()=>{
   document.getElementById('setup-title').textContent='Break Through';
   document.getElementById('setup-subtitle').textContent='Stop typing and lose everything.';
   document.getElementById('start-btn').textContent='Begin';
+  storage.set('wod_peace_mode', false);
 });
 document.getElementById('sel-peace').addEventListener('click',()=>{
   peaceMode=true;
@@ -1951,6 +1952,7 @@ document.getElementById('sel-peace').addEventListener('click',()=>{
   document.getElementById('setup-title').textContent='Peace Mode';
   document.getElementById('setup-subtitle').textContent='Write toward your goal. No consequences.';
   document.getElementById('start-btn').textContent='Begin (Peace)';
+  storage.set('wod_peace_mode', true);
 });
 
 document.getElementById('options-toggle').addEventListener('click',()=>{
@@ -1963,7 +1965,7 @@ document.getElementById('options-toggle').addEventListener('click',()=>{
 // ══════════════════════════════════════════════
 //  CORE STATE
 // ══════════════════════════════════════════════
-let mode='time', goalVal=5, gracePeriod=5;
+let mode=storage.get('wod_goal_mode','time'), goalVal=storage.get('wod_goal_val',5), gracePeriod=storage.get('wod_grace',5);
 // Warmup and distraction blocker are baked-in defaults (no longer user-toggleable).
 const useWarmup=true, useDistraction=true;
 let running=false, dead=false, won=false;
@@ -1973,7 +1975,7 @@ let warmupActive=false, effectiveGrace=5;
 let flowStart=0, inFlow=false;
 const FLOW_THRESHOLD=120;
 let isDistracted=false, distractionCountdown=0, distractionInterval=null;
-let currentDangerPct=0, peakWpm=0, wpmSamples=[], lastKeyWasReal=false, peaceMode=false;
+let currentDangerPct=0, peakWpm=0, wpmSamples=[], lastKeyWasReal=false, peaceMode=storage.get('wod_peace_mode', false);
 const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1);
 
 const editor             =document.getElementById('editor');
@@ -2111,8 +2113,8 @@ document.querySelectorAll('#mode-opts .opt-btn:not(#custom-goal-btn)').forEach(b
     selectOnly('#mode-opts .opt-btn', btn);
     mode=btn.dataset.mode; goalVal=parseInt(btn.dataset.val);
     document.getElementById('custom-goal-wrap').classList.remove('visible');
-    // Update unit label if custom was last used
     document.getElementById('custom-goal-unit').textContent=mode==='time'?'min':'words';
+    storage.set('wod_goal_mode', mode); storage.set('wod_goal_val', goalVal);
   });
 });
 
@@ -2130,9 +2132,8 @@ document.getElementById('custom-goal-btn').addEventListener('click',()=>{
 document.getElementById('custom-goal-input').addEventListener('input', e=>{
   const v=parseInt(e.target.value)||0;
   if(v>0){
-    // Heuristic: ≥ 60 = words mode, < 60 = time mode — but show unit so user knows
-    // Better: we expose two sub-buttons. For now keep it simple with unit toggle.
     goalVal=v;
+    storage.set('wod_goal_val', goalVal);
   }
 });
 
@@ -2143,6 +2144,7 @@ document.getElementById('custom-goal-unit').addEventListener('click',()=>{
   document.getElementById('custom-goal-unit').textContent = mode==='time' ? 'min' : 'words';
   const v=parseInt(document.getElementById('custom-goal-input').value)||0;
   if(v>0) goalVal=v;
+  storage.set('wod_goal_mode', mode); storage.set('wod_goal_val', goalVal);
 });
 
 // Grace preset buttons
@@ -2150,10 +2152,11 @@ document.querySelectorAll('#grace-opts .opt-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     selectOnly('#grace-opts .opt-btn', btn);
     gracePeriod=parseInt(btn.dataset.grace);
+    storage.set('wod_grace', gracePeriod);
   });
 });
 
-document.getElementById('toggle-sound').addEventListener('change',      e=>{ useSound=e.target.checked; volSlider.disabled=!e.target.checked; });
+document.getElementById('toggle-sound').addEventListener('change',      e=>{ useSound=e.target.checked; volSlider.disabled=!e.target.checked; storage.set('wod_use_sound', useSound); });
 
 // Typing volume slider
 const volSlider = document.getElementById('volume-slider');
@@ -2210,8 +2213,40 @@ ambVolSlider.addEventListener('input', e=>{
   if(ambientType !== 'off' && !ambientNode) startAmbient();
 });
 
-document.getElementById('toggle-paste').addEventListener('change',     e=>{ allowPaste=e.target.checked; });
+document.getElementById('toggle-paste').addEventListener('change',     e=>{ allowPaste=e.target.checked; storage.set('wod_paste', allowPaste); });
 document.getElementById('start-btn').addEventListener('click', startSession);
+
+// ══════════════════════════════════════════════
+//  RESTORE SAVED SETUP PREFERENCES
+//  Runs once on page load to sync UI with localStorage-restored state.
+// ══════════════════════════════════════════════
+(function restoreSetup(){
+  // Mode (peace vs break through)
+  if(peaceMode) document.getElementById('sel-peace').click();
+
+  // Goal — match a preset button, or fall back to custom with saved value
+  const presetGoal = document.querySelector(`#mode-opts .opt-btn[data-mode="${mode}"][data-val="${goalVal}"]`);
+  if(presetGoal){
+    selectOnly('#mode-opts .opt-btn', presetGoal);
+  } else {
+    selectOnly('#mode-opts .opt-btn', document.getElementById('custom-goal-btn'));
+    document.getElementById('custom-goal-wrap').classList.add('visible');
+    document.getElementById('custom-goal-input').value = goalVal;
+    document.getElementById('custom-goal-unit').textContent = mode==='time' ? 'min' : 'words';
+  }
+
+  // Grace preset
+  const presetGrace = document.querySelector(`#grace-opts .opt-btn[data-grace="${gracePeriod}"]`);
+  if(presetGrace) selectOnly('#grace-opts .opt-btn', presetGrace);
+
+  // Checkboxes
+  document.getElementById('toggle-chaos').checked = useChaos;
+  document.getElementById('chaos-sub').classList.toggle('visible', useChaos);
+  document.getElementById('chaos-hardcore').checked = chaosHardcore;
+  document.getElementById('toggle-paste').checked = allowPaste;
+  document.getElementById('toggle-sound').checked = useSound;
+  volSlider.disabled = !useSound;
+})();
 
 // Global shortcuts during a session
 document.addEventListener('keydown',e=>{
@@ -2281,7 +2316,7 @@ function startSession(){
 }
 
 // Block paste and drag-drop — conditional on toggle
-let allowPaste=false;
+let allowPaste=storage.get('wod_paste', false);
 editor.addEventListener('paste', e=>{ if(!allowPaste) e.preventDefault(); });
 editor.addEventListener('drop',  e=>{ e.preventDefault(); });
 
