@@ -411,7 +411,8 @@ body.dead #editor { color:var(--dead-text); opacity:.3; }
   background:rgba(44,62,107,.92);
   backdrop-filter:blur(3px);
   display:flex; align-items:flex-start; justify-content:center;
-  padding-top:12vh;
+  padding:12vh 0 48px;
+  overflow-y:auto; overscroll-behavior:contain;
   z-index:180; opacity:0; pointer-events:none;
   transition:opacity .2s;
 }
@@ -435,9 +436,15 @@ body.dead #editor { color:var(--dead-text); opacity:.3; }
 #thesaurus-input:focus { border-bottom-color:rgba(160,190,240,.6); }
 #thesaurus-results {
   margin-top:20px; min-height:180px;
-  display:flex; flex-wrap:wrap; gap:6px 8px;
-  align-content:flex-start;
+  display:flex; flex-direction:column; gap:22px;
 }
+.thes-sense-label {
+  font-family:'Lora',serif; font-style:italic; font-size:13px;
+  color:rgba(160,190,240,.72); line-height:1.5;
+  padding-left:10px; margin-bottom:10px;
+  border-left:2px solid rgba(160,190,240,.28);
+}
+.thes-sense-words { display:flex; flex-wrap:wrap; gap:6px 8px; }
 .thes-word {
   font-family:'Lora',serif; font-size:15px; color:rgba(220,230,250,.92);
   background:rgba(255,255,255,.06); border:1px solid rgba(160,180,240,.22);
@@ -1664,7 +1671,21 @@ async function fetchWordFrequencies(word){
   } catch(e){ return new Map(); }
 }
 
-// Returns { syns, similars, related } — callers assemble the final list.
+// Strip MW's internal markup tokens (e.g. {bc}, {it}word{/it}, {sx|word||}) from dt text.
+function cleanMwText(text){
+  if(!text) return '';
+  return text
+    .replace(/\{bc\}/g, '')
+    .replace(/\{it\}([^{}]*)\{\/it\}/g, '$1')
+    .replace(/\{wi\}([^{}]*)\{\/wi\}/g, '$1')
+    .replace(/\{sx\|([^|}]+)\|[^}]*\}/g, '$1')
+    .replace(/\{[^}]+\}/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// Returns an array of sense groups: [{ label, syns, similars, related }]
+// Each group corresponds to one meaning of the word. Null if MW doesn't know it.
 async function fetchSynonymsMW(word){
   if(!MW_THESAURUS_KEY) return null;
   try{
@@ -1675,43 +1696,53 @@ async function fetchSynonymsMW(word){
     if(!Array.isArray(data) || data.length === 0 || typeof data[0] === 'string') return null;
     const lower = word.toLowerCase();
     const seen = new Set([lower]);
-    const syns = [];     // strict synonyms (meta.syns / syn_list)
-    const similars = []; // "words with similar meanings" (sim_list)
-    const related = [];  // "related words" (rel_list) — broader associations
-    // English-only gate: ASCII letters + space/hyphen/apostrophe only.
     const isPlainEnglish = w => /^[a-zA-Z][a-zA-Z\s\-']*$/.test(w);
-    const addWord = (w, bucket) => {
-      if(!w || !isPlainEnglish(w)) return;
-      const lc = w.toLowerCase();
-      if(!seen.has(lc)){ seen.add(lc); bucket.push(w); }
-    };
+    const senses = [];
+
     data.forEach(entry => {
       if(!entry || !entry.meta) return;
       // Filter out near-spellings (e.g. query "canyon" also returns "canon:1")
       const headword = (entry.meta.id || '').split(':')[0].toLowerCase();
       if(headword !== lower) return;
-      if(Array.isArray(entry.meta.syns)){
-        entry.meta.syns.forEach(senseArr => senseArr.forEach(w => addWord(w, syns)));
-      }
-      if(Array.isArray(entry.def)){
-        entry.def.forEach(block => {
-          if(!Array.isArray(block.sseq)) return;
-          block.sseq.forEach(group => group.forEach(item => {
+
+      if(!Array.isArray(entry.def)) return;
+      entry.def.forEach(block => {
+        if(!Array.isArray(block.sseq)) return;
+        block.sseq.forEach(senseGroup => {
+          const bucket = { label: '', syns: [], similars: [], related: [] };
+          const addTo = (w, arr) => {
+            if(!w || !isPlainEnglish(w)) return;
+            const lc = w.toLowerCase();
+            if(seen.has(lc)) return;
+            seen.add(lc);
+            arr.push(w);
+          };
+          senseGroup.forEach(item => {
             if(!Array.isArray(item) || item.length < 2) return;
             const [type, obj] = item;
             if((type !== 'sense' && type !== 'sen') || !obj) return;
+            // Label: first text chunk of the definition
+            if(!bucket.label && Array.isArray(obj.dt)){
+              const textEntry = obj.dt.find(d => Array.isArray(d) && d[0] === 'text');
+              if(textEntry) bucket.label = cleanMwText(textEntry[1]);
+            }
+            if(Array.isArray(obj.syn_list)){
+              obj.syn_list.forEach(g => g.forEach(ent => addTo(ent.wd, bucket.syns)));
+            }
             if(Array.isArray(obj.sim_list)){
-              obj.sim_list.forEach(g => g.forEach(ent => addWord(ent.wd, similars)));
+              obj.sim_list.forEach(g => g.forEach(ent => addTo(ent.wd, bucket.similars)));
             }
             if(Array.isArray(obj.rel_list)){
-              obj.rel_list.forEach(g => g.forEach(ent => addWord(ent.wd, related)));
+              obj.rel_list.forEach(g => g.forEach(ent => addTo(ent.wd, bucket.related)));
             }
-          }));
+          });
+          if(bucket.syns.length || bucket.similars.length || bucket.related.length){
+            senses.push(bucket);
+          }
         });
-      }
+      });
     });
-    if(!syns.length && !similars.length && !related.length) return null;
-    return { syns, similars, related };
+    return senses.length ? senses : null;
   } catch(e){ return null; }
 }
 
@@ -1744,38 +1775,73 @@ async function fetchSynonymsDatamuse(word){
   } catch(e){ return []; }
 }
 
+// Returns an array of sense groups: [{ label, words: [...] }].
+// When MW has entries: its senses lead, then a Datamuse-sourced group at the end
+// fills gaps MW misses (e.g. "stone/boulder" for "rock", which MW's thesaurus lacks).
+// When MW is silent: Datamuse carries the whole response, unlabeled.
 async function fetchSynonyms(word){
-  // Pure MW, capped at 60 (syns → similars → related, in that order).
-  // Frequency filter applied to `related` only — strict syns & sim_list stay untouched.
-  // Fall back to Datamuse only if MW doesn't recognize the word at all.
-  const [mw, freqMap] = await Promise.all([
+  const [mwSenses, freqMap, dmWords] = await Promise.all([
     fetchSynonymsMW(word),
-    fetchWordFrequencies(word)
+    fetchWordFrequencies(word),
+    fetchSynonymsDatamuse(word)
   ]);
-  if(mw){
-    const filteredRelated = mw.related.filter(w => {
-      const freq = freqMap.get(w.toLowerCase());
-      return freq !== undefined && freq >= REL_FREQ_THRESHOLD;
-    });
-    return [...mw.syns, ...mw.similars, ...filteredRelated].slice(0, 60);
+
+  if(mwSenses && mwSenses.length > 0){
+    const senses = mwSenses.map(s => ({
+      label: s.label,
+      words: [
+        ...s.syns,
+        ...s.similars,
+        ...s.related.filter(w => {
+          const f = freqMap.get(w.toLowerCase());
+          return f !== undefined && f >= REL_FREQ_THRESHOLD;
+        })
+      ]
+    })).filter(s => s.words.length > 0);
+
+    // Collect everything MW already surfaced so we don't duplicate
+    const shown = new Set([word.toLowerCase()]);
+    senses.forEach(s => s.words.forEach(w => shown.add(w.toLowerCase())));
+
+    // Datamuse supplement — catches gaps MW leaves in common nouns
+    const extras = dmWords.filter(w => !shown.has(w.toLowerCase())).slice(0, 20);
+    if(extras.length > 0){
+      senses.push({ label: 'also — from broader usage', words: extras });
+    }
+    return senses;
   }
-  return await fetchSynonymsDatamuse(word);
+
+  return dmWords.length ? [{ label: '', words: dmWords }] : [];
 }
 
-function renderThesaurusResults(words, query){
+function renderThesaurusResults(senses, query){
   if(query !== thesLastQuery) return; // stale response — ignore
-  if(words.length === 0){
+  if(!senses || senses.length === 0){
     thesResults.innerHTML = '<span class="thes-status">No synonyms found.</span>';
     return;
   }
   thesResults.innerHTML = '';
-  words.forEach(w => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'thes-word';
-    btn.textContent = w;
-    btn.addEventListener('click', () => insertWordAtCursor(w));
-    thesResults.appendChild(btn);
+  senses.forEach(sense => {
+    const group = document.createElement('div');
+    group.className = 'thes-sense';
+    if(sense.label){
+      const lbl = document.createElement('div');
+      lbl.className = 'thes-sense-label';
+      lbl.textContent = sense.label;
+      group.appendChild(lbl);
+    }
+    const words = document.createElement('div');
+    words.className = 'thes-sense-words';
+    sense.words.forEach(w => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'thes-word';
+      btn.textContent = w;
+      btn.addEventListener('click', () => insertWordAtCursor(w));
+      words.appendChild(btn);
+    });
+    group.appendChild(words);
+    thesResults.appendChild(group);
   });
 }
 
@@ -1803,8 +1869,8 @@ thesInput.addEventListener('input', e => {
   thesDebounce = setTimeout(async ()=>{
     thesLastQuery = q;
     thesResults.innerHTML = '<span class="thes-status">Looking…</span>';
-    const words = await fetchSynonyms(q);
-    renderThesaurusResults(words, q);
+    const senses = await fetchSynonyms(q);
+    renderThesaurusResults(senses, q);
   }, 220);
 });
 
