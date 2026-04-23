@@ -857,14 +857,17 @@ body.dark #death-confirm { background:rgba(6,8,16,.95); }
   color:var(--muted); opacity:.5; margin-top:14px;
 }
 
-/* Setup stats button */
+/* Setup stats button — persistent dashed underline signals it's clickable.
+   Matches the unit-toggle affordance language used elsewhere in the setup. */
 #setup-stats-btn {
   font-family:'EB Garamond',serif; font-size:12px; letter-spacing:.1em;
-  text-transform:uppercase; color:var(--muted); background:none; border:none;
-  cursor:pointer; transition:color .2s; padding:6px 0; margin-top:8px;
-  border-bottom:1px solid transparent;
+  text-transform:uppercase; color:var(--text); font-weight:500;
+  background:none; border:none; cursor:pointer;
+  padding:6px 2px; margin-top:12px;
+  border-bottom:1px dashed var(--border-med);
+  transition:color .2s, border-bottom-color .2s, border-bottom-style .2s;
 }
-#setup-stats-btn:hover { color:var(--text); border-bottom-color:var(--border-subtle); }
+#setup-stats-btn:hover { border-bottom-color:var(--text); border-bottom-style:solid; }
 
 /* ── Device sync section ── */
 #device-section {
