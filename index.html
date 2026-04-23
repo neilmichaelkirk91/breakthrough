@@ -621,7 +621,7 @@ body.dead #editor { color:var(--dead-text); opacity:.3; }
 .toggle-item input:checked + .toggle-track .toggle-thumb { transform:translateX(16px); }
 .toggle-label { font-family:'EB Garamond',serif; font-size:14px; color:var(--text); letter-spacing:.02em; user-select:none; }
 
-#chaos-sub { display:none; margin-top:6px; font-family:'EB Garamond',serif; font-size:12px; color:var(--muted); letter-spacing:.06em; text-align:center; }
+#chaos-sub { display:none; margin:0 0 28px; font-family:'EB Garamond',serif; font-size:12px; color:var(--muted); letter-spacing:.06em; text-align:center; }
 #chaos-sub.visible { display:block; }
 #chaos-sub label { cursor:pointer; }
 #chaos-sub input { margin-right:6px; cursor:pointer; }
@@ -877,27 +877,26 @@ body.dark #death-confirm { background:rgba(6,8,16,.95); }
 #emergency-btn {
   /* z-index above #death-confirm (190) so it stays clickable during the
      3-second "Still there?" window — that's exactly when you'd want to bail and save. */
-  position:fixed; top:20px; left:24px; z-index:200;
+  position:fixed; top:22px; left:24px; z-index:200;
   display:none; align-items:center; justify-content:center;
-  font-family:'EB Garamond',serif; font-size:11px; letter-spacing:.18em;
+  font-family:'EB Garamond',serif; font-size:10px; letter-spacing:.15em;
   text-transform:uppercase; font-weight:500;
-  padding:8px 14px; border-radius:3px; cursor:pointer;
-  background:rgba(184,48,48,.9); color:#fff;
-  border:1px solid rgba(184,48,48,1);
-  transition:background .2s, transform .15s, box-shadow .2s;
-  box-shadow:0 1px 4px rgba(184,48,48,.25);
+  padding:4px 9px; border-radius:3px; cursor:pointer;
+  background:transparent; color:rgba(184,48,48,.85);
+  border:1px solid rgba(184,48,48,.6);
+  transition:color .2s, border-color .2s, background .2s;
 }
 #emergency-btn.visible { display:inline-flex; }
-#emergency-btn:hover { background:rgba(184,48,48,1); transform:scale(1.04); box-shadow:0 2px 10px rgba(184,48,48,.45); }
+#emergency-btn:hover { color:rgba(184,48,48,1); border-color:rgba(184,48,48,1); background:rgba(184,48,48,.08); }
 /* Nudge topbar's left content right when the emergency button is showing.
    Uses a body class (not :has()) for broader browser support and repaint stability. */
-body.has-emergency #topbar { padding-left:140px; }
+body.has-emergency #topbar { padding-left:100px; }
 @media (max-width:600px) {
-  body.has-emergency #topbar { padding-left:130px; }
+  body.has-emergency #topbar { padding-left:90px; }
 }
 @media (max-width:380px) {
-  #emergency-btn { top:14px; left:14px; font-size:10px; padding:7px 10px; letter-spacing:.15em; }
-  body.has-emergency #topbar { padding-left:120px; }
+  #emergency-btn { top:16px; left:14px; font-size:9px; padding:3px 7px; letter-spacing:.12em; }
+  body.has-emergency #topbar { padding-left:80px; }
 }
 
 /* ── Dark mode toggle ── */
@@ -1178,6 +1177,9 @@ body.keyboard-open #danger-bar-wrap { padding-top:6px; }
         <span class="toggle-label">Allow paste</span>
       </label>
     </div>
+    <div id="chaos-sub">
+      <label><input type="checkbox" id="chaos-hardcore"> Hardcore — no backspace at all</label>
+    </div>
     <div class="volume-row">
       <span class="volume-label">Typing volume</span>
       <input type="range" id="volume-slider" min="0" max="300" value="100">
@@ -1196,9 +1198,6 @@ body.keyboard-open #danger-bar-wrap { padding-top:6px; }
       <span class="volume-label">Ambient volume</span>
       <input type="range" id="ambient-volume-slider" min="0" max="100" value="40">
       <span class="volume-value" id="ambient-volume-value">40</span>
-    </div>
-    <div id="chaos-sub">
-      <label><input type="checkbox" id="chaos-hardcore"> Hardcore — no backspace at all</label>
     </div>
 
     <div id="font-section">
@@ -1235,7 +1234,6 @@ body.keyboard-open #danger-bar-wrap { padding-top:6px; }
     </div>
 
     <p class="options-note">
-      Warmup eases activation — grace starts wide, tightens over 90s.<br>
       Chaos mode blocks cursor movement and limits backspace.<br>
       Cmd+I captures ideas mid-session without breaking your flow.
     </p>
