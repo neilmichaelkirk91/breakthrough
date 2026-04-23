@@ -405,6 +405,56 @@ body.dead #editor { color:var(--dead-text); opacity:.3; }
 #distraction-timer.urgent { color:var(--danger-high); }
 #distraction-sub { font-family:'EB Garamond',serif; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:#404060; }
 
+/* ── Thesaurus overlay (peace mode only) ── */
+#thesaurus-overlay {
+  position:fixed; inset:0;
+  background:rgba(44,62,107,.92);
+  backdrop-filter:blur(3px);
+  display:flex; align-items:flex-start; justify-content:center;
+  padding-top:12vh;
+  z-index:180; opacity:0; pointer-events:none;
+  transition:opacity .2s;
+}
+#thesaurus-overlay.show { opacity:1; pointer-events:all; }
+#thesaurus-box {
+  width:100%; max-width:540px; padding:0 32px;
+  animation:ideaSlideIn .2s ease;
+}
+#thesaurus-label {
+  font-family:'EB Garamond',serif; font-size:11px; letter-spacing:.2em; text-transform:uppercase;
+  color:rgba(160,190,240,.7); margin-bottom:12px; display:block;
+}
+#thesaurus-input {
+  width:100%; background:transparent; border:none;
+  border-bottom:1px solid rgba(160,180,240,.35);
+  font-family:'Lora',serif; font-size:20px;
+  color:#fff; padding:8px 0; outline:none;
+  caret-color:rgba(160,190,240,.9);
+}
+#thesaurus-input::placeholder { color:rgba(160,190,240,.45); font-style:italic; }
+#thesaurus-input:focus { border-bottom-color:rgba(160,190,240,.6); }
+#thesaurus-results {
+  margin-top:20px; min-height:180px;
+  display:flex; flex-wrap:wrap; gap:6px 8px;
+  align-content:flex-start;
+}
+.thes-word {
+  font-family:'Lora',serif; font-size:15px; color:rgba(220,230,250,.92);
+  background:rgba(255,255,255,.06); border:1px solid rgba(160,180,240,.22);
+  border-radius:3px; padding:6px 12px; cursor:pointer;
+  transition:all .15s; font-weight:400;
+}
+.thes-word:hover { background:rgba(160,190,240,.22); color:#fff; border-color:rgba(160,190,240,.55); }
+.thes-status {
+  font-family:'Lora',serif; font-style:italic; font-size:14px;
+  color:rgba(160,190,240,.55);
+}
+#thesaurus-hint {
+  margin-top:20px;
+  font-family:'EB Garamond',serif; font-size:11px; letter-spacing:.12em;
+  color:rgba(160,190,240,.45); text-align:center;
+}
+
 /* ── Mode selector ── */
 #mode-selector {
   display:flex; gap:0; margin-bottom:28px;
@@ -1188,7 +1238,7 @@ body.keyboard-open #danger-bar-wrap { padding-top:6px; }
 </div>
 
 <!-- Cmd+I hint -->
-<div id="cmd-hint"><kbd>⌘I</kbd> capture idea</div>
+<div id="cmd-hint"><kbd>⌘I</kbd> capture idea<span id="cmd-hint-thesaurus" style="display:none"> · <kbd>⌘K</kbd> thesaurus</span></div>
 
 <div id="milestone-toast"></div>
 
@@ -1199,6 +1249,16 @@ body.keyboard-open #danger-bar-wrap { padding-top:6px; }
     <span id="idea-label">Idea — clock is running</span>
     <input type="text" id="idea-input" placeholder="what just crossed your mind?" maxlength="200" autocomplete="off">
     <p id="idea-hint">Enter to save · Esc to discard</p>
+  </div>
+</div>
+
+<!-- ══ THESAURUS OVERLAY (peace mode only) ══ -->
+<div id="thesaurus-overlay">
+  <div id="thesaurus-box">
+    <span id="thesaurus-label">Thesaurus</span>
+    <input type="text" id="thesaurus-input" placeholder="look up a word..." maxlength="60" autocomplete="off" spellcheck="false">
+    <div id="thesaurus-results"></div>
+    <p id="thesaurus-hint">Click a word to insert at cursor · Esc to close</p>
   </div>
 </div>
 
@@ -1548,6 +1608,216 @@ ideaInput.addEventListener('input',()=>{
 });
 
 // ══════════════════════════════════════════════
+//  THESAURUS (peace mode only)
+//  Uses the Datamuse API — free, no auth, CORS-enabled.
+// ══════════════════════════════════════════════
+const thesOverlay = document.getElementById('thesaurus-overlay');
+const thesInput   = document.getElementById('thesaurus-input');
+const thesResults = document.getElementById('thesaurus-results');
+let thesOverlayOpen = false;
+let thesDebounce = null;
+let thesLastQuery = '';
+
+function openThesaurus(){
+  if(thesOverlayOpen || !running || !peaceMode) return;
+  thesOverlayOpen = true;
+  thesInput.value = '';
+  thesLastQuery = '';
+  thesResults.innerHTML = '<span class="thes-status">Start typing to search synonyms.</span>';
+  thesOverlay.classList.add('show');
+  setTimeout(()=>thesInput.focus(), 50);
+}
+
+function closeThesaurus(){
+  if(!thesOverlayOpen) return;
+  thesOverlayOpen = false;
+  thesOverlay.classList.remove('show');
+  setTimeout(()=>editor.focus(), 50);
+}
+
+// Merriam-Webster Thesaurus API key — free at https://dictionaryapi.com/register/index
+// Paste here, OR set in devtools: localStorage.setItem('wod_mw_key', 'your-key')
+// Leave blank to use the Datamuse fallback (broader but noisier).
+const MW_THESAURUS_KEY = localStorage.getItem('wod_mw_key') || '5e830456-f82a-4c24-bfa3-ec9fb263f7b1';
+
+// Minimum word frequency (occurrences per million) required for rel_list entries.
+// Higher = more aggressive filtering of specialized/rare words (e.g. "wadi", "kloof").
+// Tune via devtools: localStorage.setItem('wod_rel_freq_threshold', '0.2')
+const REL_FREQ_THRESHOLD = parseFloat(localStorage.getItem('wod_rel_freq_threshold')) || 0.1;
+
+// Build a frequency map (per-million) of words semantically related to the query.
+// Used to filter rarities out of MW's rel_list tier.
+async function fetchWordFrequencies(word){
+  try{
+    const res = await fetch(`https://api.datamuse.com/words?ml=${encodeURIComponent(word)}&md=f&max=500`);
+    if(!res.ok) return new Map();
+    const data = await res.json();
+    const map = new Map();
+    data.forEach(d => {
+      const fTag = (d.tags || []).find(t => t.startsWith('f:'));
+      if(fTag){
+        const freq = parseFloat(fTag.slice(2));
+        if(!isNaN(freq)) map.set(d.word.toLowerCase(), freq);
+      }
+    });
+    return map;
+  } catch(e){ return new Map(); }
+}
+
+// Returns { syns, similars, related } — callers assemble the final list.
+async function fetchSynonymsMW(word){
+  if(!MW_THESAURUS_KEY) return null;
+  try{
+    const res = await fetch(`https://www.dictionaryapi.com/api/v3/references/thesaurus/json/${encodeURIComponent(word)}?key=${MW_THESAURUS_KEY}`);
+    if(!res.ok) return null;
+    const data = await res.json();
+    // MW returns an array of suggestion STRINGS when the word isn't found
+    if(!Array.isArray(data) || data.length === 0 || typeof data[0] === 'string') return null;
+    const lower = word.toLowerCase();
+    const seen = new Set([lower]);
+    const syns = [];     // strict synonyms (meta.syns / syn_list)
+    const similars = []; // "words with similar meanings" (sim_list)
+    const related = [];  // "related words" (rel_list) — broader associations
+    // English-only gate: ASCII letters + space/hyphen/apostrophe only.
+    const isPlainEnglish = w => /^[a-zA-Z][a-zA-Z\s\-']*$/.test(w);
+    const addWord = (w, bucket) => {
+      if(!w || !isPlainEnglish(w)) return;
+      const lc = w.toLowerCase();
+      if(!seen.has(lc)){ seen.add(lc); bucket.push(w); }
+    };
+    data.forEach(entry => {
+      if(!entry || !entry.meta) return;
+      // Filter out near-spellings (e.g. query "canyon" also returns "canon:1")
+      const headword = (entry.meta.id || '').split(':')[0].toLowerCase();
+      if(headword !== lower) return;
+      if(Array.isArray(entry.meta.syns)){
+        entry.meta.syns.forEach(senseArr => senseArr.forEach(w => addWord(w, syns)));
+      }
+      if(Array.isArray(entry.def)){
+        entry.def.forEach(block => {
+          if(!Array.isArray(block.sseq)) return;
+          block.sseq.forEach(group => group.forEach(item => {
+            if(!Array.isArray(item) || item.length < 2) return;
+            const [type, obj] = item;
+            if((type !== 'sense' && type !== 'sen') || !obj) return;
+            if(Array.isArray(obj.sim_list)){
+              obj.sim_list.forEach(g => g.forEach(ent => addWord(ent.wd, similars)));
+            }
+            if(Array.isArray(obj.rel_list)){
+              obj.rel_list.forEach(g => g.forEach(ent => addWord(ent.wd, related)));
+            }
+          }));
+        });
+      }
+    });
+    if(!syns.length && !similars.length && !related.length) return null;
+    return { syns, similars, related };
+  } catch(e){ return null; }
+}
+
+async function fetchSynonymsDatamuse(word){
+  // Blend rel_syn + ml for breadth when MW isn't available or doesn't know the word.
+  try{
+    const q = encodeURIComponent(word);
+    const [synRes, mlRes] = await Promise.all([
+      fetch(`https://api.datamuse.com/words?rel_syn=${q}&max=60`),
+      fetch(`https://api.datamuse.com/words?ml=${q}&max=80`)
+    ]);
+    const syns = synRes.ok ? await synRes.json() : [];
+    const mls  = mlRes.ok  ? await mlRes.json()  : [];
+    const lower = word.toLowerCase();
+    const map = new Map();
+    syns.forEach(d => {
+      if(d.word.toLowerCase() === lower) return;
+      map.set(d.word, { word:d.word, score:(d.score || 1000) * 2 });
+    });
+    mls.forEach(d => {
+      if(d.word.toLowerCase() === lower) return;
+      const existing = map.get(d.word);
+      if(existing) existing.score += (d.score || 1000);
+      else         map.set(d.word, { word:d.word, score:(d.score || 100) });
+    });
+    return [...map.values()]
+      .sort((a,b) => b.score - a.score)
+      .slice(0, 50)
+      .map(d => d.word);
+  } catch(e){ return []; }
+}
+
+async function fetchSynonyms(word){
+  // Pure MW, capped at 60 (syns → similars → related, in that order).
+  // Frequency filter applied to `related` only — strict syns & sim_list stay untouched.
+  // Fall back to Datamuse only if MW doesn't recognize the word at all.
+  const [mw, freqMap] = await Promise.all([
+    fetchSynonymsMW(word),
+    fetchWordFrequencies(word)
+  ]);
+  if(mw){
+    const filteredRelated = mw.related.filter(w => {
+      const freq = freqMap.get(w.toLowerCase());
+      return freq !== undefined && freq >= REL_FREQ_THRESHOLD;
+    });
+    return [...mw.syns, ...mw.similars, ...filteredRelated].slice(0, 60);
+  }
+  return await fetchSynonymsDatamuse(word);
+}
+
+function renderThesaurusResults(words, query){
+  if(query !== thesLastQuery) return; // stale response — ignore
+  if(words.length === 0){
+    thesResults.innerHTML = '<span class="thes-status">No synonyms found.</span>';
+    return;
+  }
+  thesResults.innerHTML = '';
+  words.forEach(w => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'thes-word';
+    btn.textContent = w;
+    btn.addEventListener('click', () => insertWordAtCursor(w));
+    thesResults.appendChild(btn);
+  });
+}
+
+function insertWordAtCursor(word){
+  const start = editor.selectionStart ?? editor.value.length;
+  const end   = editor.selectionEnd   ?? editor.value.length;
+  const val = editor.value;
+  editor.value = val.slice(0, start) + word + val.slice(end);
+  const caret = start + word.length;
+  editor.selectionStart = editor.selectionEnd = caret;
+  lastKeystroke = Date.now();
+  closeThesaurus();
+  // Nudge wordcount + danger bar as if the user typed it
+  editor.dispatchEvent(new Event('input'));
+}
+
+thesInput.addEventListener('input', e => {
+  const q = e.target.value.trim();
+  clearTimeout(thesDebounce);
+  if(q.length < 2){
+    thesResults.innerHTML = '<span class="thes-status">Start typing to search synonyms.</span>';
+    thesLastQuery = '';
+    return;
+  }
+  thesDebounce = setTimeout(async ()=>{
+    thesLastQuery = q;
+    thesResults.innerHTML = '<span class="thes-status">Looking…</span>';
+    const words = await fetchSynonyms(q);
+    renderThesaurusResults(words, q);
+  }, 220);
+});
+
+thesInput.addEventListener('keydown', e => {
+  if(e.key === 'Escape'){ e.preventDefault(); closeThesaurus(); }
+});
+
+// Click outside the input box (on the backdrop) closes the overlay
+thesOverlay.addEventListener('click', e => {
+  if(e.target === thesOverlay) closeThesaurus();
+});
+
+// ══════════════════════════════════════════════
 //  CHAOS MODE
 // ══════════════════════════════════════════════
 let useChaos=false, chaosHardcore=false;
@@ -1850,9 +2120,11 @@ ambVolSlider.addEventListener('input', e=>{
 document.getElementById('toggle-paste').addEventListener('change',     e=>{ allowPaste=e.target.checked; });
 document.getElementById('start-btn').addEventListener('click', startSession);
 
-// Global Cmd+I
+// Global shortcuts during a session
 document.addEventListener('keydown',e=>{
-  if((e.metaKey||e.ctrlKey)&&e.key==='i'&&running&&!ideaOverlayOpen){ e.preventDefault(); openIdeaCapture(); }
+  if(!running) return;
+  if((e.metaKey||e.ctrlKey)&&e.key==='i'&&!ideaOverlayOpen){ e.preventDefault(); openIdeaCapture(); }
+  else if((e.metaKey||e.ctrlKey)&&e.key==='k'&&peaceMode&&!thesOverlayOpen){ e.preventDefault(); openThesaurus(); }
 });
 
 // ══════════════════════════════════════════════
@@ -1877,6 +2149,7 @@ function startSession(){
   topbar.classList.remove('fade'); flowIndicator.classList.remove('visible');
   ideaCountEl.classList.remove('visible'); distractionOverlay.classList.remove('show');
   cmdHint.classList.add('session-active');
+  document.getElementById('cmd-hint-thesaurus').style.display = peaceMode ? 'inline' : 'none';
   editor.placeholder = peaceMode ? 'Begin writing.' : "Begin writing. Don't stop.";
 
   const intention=intentionInput.value.trim();
@@ -2120,6 +2393,7 @@ function flushPendingSession(){
 function hideSessionOverlays(){
   distractionOverlay.classList.remove('show');
   ideaOverlay.classList.remove('show');
+  thesOverlay.classList.remove('show'); thesOverlayOpen = false;
   intentionGhost.classList.remove('visible');
   cmdHint.classList.remove('session-active');
 }
