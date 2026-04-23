@@ -35,59 +35,62 @@
 
 /* ── OCEAN ── */
 body.scheme-ocean {
-  --bg:#e8eef6; --text:#1a2840; --muted:#7088a8;
+  --bg:#e2ecf6; --text:#1a2840; --muted:#7088a8;
   --danger-low:#c0982e; --danger-mid:#b86828; --danger-high:#a83030;
-  --flow:#d86820; --flow-bg:#e4f0f4; --idea-bg:#1e3460;
-  --peace-bg:#e2eaf5; --peace-text:#1a2840; --peace-muted:#6a82a5; --peace-accent:#b48048;
+  --flow:#d86820; --flow-bg:#dceef4; --idea-bg:#1e3460;
+  --peace-bg:#dce8f5; --peace-text:#1a2840; --peace-muted:#6a82a5; --peace-accent:#b48048;
   --border-subtle:rgba(26,40,64,.12); --border-med:rgba(26,40,64,.18);
   --surface-hover:rgba(26,40,64,.05); --surface-active:rgba(26,40,64,.03);
   --toggle-track:rgba(26,40,64,.14);
-  --warn-low-bg:#dde6f0; --warn-mid-bg:#d0d8ea; --warn-high-bg:#c8cce0;
+  --warn-low-bg:#d6e4ee; --warn-mid-bg:#c8d6e8; --warn-high-bg:#c0cade;
   --pulse-peak:#bec4da;
   --dead-bg:#080e1a; --dead-text:#2a3858;
   --end-bg:#060c18; --end-h:#4a6890; --end-sub:#2a4068;
   --streak-hot:#d06820; --chaos-c:#4a6a9a; --warmup-c:#a87040; --bd-dot:#d86820;
 }
 body.scheme-ocean.dark {
-  --bg:#080e1e; --text:#b0c4e0; --muted:#4a6088;
-  --flow:#e89848; --flow-bg:#0a1420;
-  --peace-bg:#0a1225; --peace-text:#a0b8d8; --peace-muted:#3e5878; --peace-accent:#d4a060;
+  /* bg lifted from 5% to 13% lightness for reduced eye fatigue on long sessions.
+     All bg-derived values lifted proportionally to preserve visual hierarchy. */
+  --bg:#101c32; --text:#b0c4e0; --muted:#4a6088;
+  --flow:#e89848; --flow-bg:#0e1a2a;
+  --peace-bg:#0e1a30; --peace-text:#a0b8d8; --peace-muted:#3e5878; --peace-accent:#d4a060;
   --border-subtle:rgba(120,160,220,.12); --border-med:rgba(120,160,220,.18);
   --surface-hover:rgba(120,160,220,.07); --surface-active:rgba(120,160,220,.04);
   --toggle-track:rgba(120,160,220,.18);
-  --warn-low-bg:#101828; --warn-mid-bg:#161e30; --warn-high-bg:#1c1828;
-  --pulse-peak:#221e30;
-  --dead-bg:#040810; --dead-text:#1e2e48;
-  --end-bg:#040810; --end-h:#4a6890; --end-sub:#2a4068;
+  --warn-low-bg:#16202e; --warn-mid-bg:#1c2638; --warn-high-bg:#22202e;
+  --pulse-peak:#28222e;
+  --dead-bg:#080c18; --dead-text:#1e2e48;
+  --end-bg:#080c18; --end-h:#4a6890; --end-sub:#2a4068;
   --streak-hot:#e09838; --chaos-c:#5a82b8; --warmup-c:#d09868; --bd-dot:#e89848;
 }
 
 /* ── FLORA ── */
 body.scheme-flora {
-  --bg:#edf2ea; --text:#1e2a1a; --muted:#7a9070;
+  --bg:#e6f0e3; --text:#1e2a1a; --muted:#7a9070;
   --danger-low:#b8982e; --danger-mid:#a87028; --danger-high:#983030;
-  --flow:#c85028; --flow-bg:#e6f0e4; --idea-bg:#2a4a2e;
-  --peace-bg:#e8f0e6; --peace-text:#1e2a1a; --peace-muted:#6a886a; --peace-accent:#b04868;
+  --flow:#c85028; --flow-bg:#deeae0; --idea-bg:#2a4a2e;
+  --peace-bg:#e0ece0; --peace-text:#1e2a1a; --peace-muted:#6a886a; --peace-accent:#b04868;
   --border-subtle:rgba(30,42,26,.12); --border-med:rgba(30,42,26,.18);
   --surface-hover:rgba(30,42,26,.05); --surface-active:rgba(30,42,26,.03);
   --toggle-track:rgba(30,42,26,.14);
-  --warn-low-bg:#e4eadc; --warn-mid-bg:#dce2cc; --warn-high-bg:#d4d6c4;
+  --warn-low-bg:#dce8d8; --warn-mid-bg:#d4dcc8; --warn-high-bg:#ccd4c0;
   --pulse-peak:#ccd0ba;
   --dead-bg:#0a100a; --dead-text:#283828;
   --end-bg:#080e08; --end-h:#5a8050; --end-sub:#384a34;
   --streak-hot:#c05818; --chaos-c:#5a7a4a; --warmup-c:#a85838; --bd-dot:#c85028;
 }
 body.scheme-flora.dark {
-  --bg:#0a100e; --text:#b0c8a8; --muted:#4a6848;
-  --flow:#d86848; --flow-bg:#0c1610;
-  --peace-bg:#0c120e; --peace-text:#a0c0a0; --peace-muted:#3e5a40; --peace-accent:#c47088;
+  /* bg lifted from 6% to 12% lightness for reduced eye fatigue. */
+  --bg:#162a18; --text:#b0c8a8; --muted:#4a6848;
+  --flow:#d86848; --flow-bg:#121e14;
+  --peace-bg:#141e16; --peace-text:#a0c0a0; --peace-muted:#3e5a40; --peace-accent:#c47088;
   --border-subtle:rgba(100,170,100,.12); --border-med:rgba(100,170,100,.18);
   --surface-hover:rgba(100,170,100,.07); --surface-active:rgba(100,170,100,.04);
   --toggle-track:rgba(100,170,100,.18);
-  --warn-low-bg:#121a10; --warn-mid-bg:#181e14; --warn-high-bg:#1e1814;
-  --pulse-peak:#241e18;
-  --dead-bg:#040804; --dead-text:#1e2e1a;
-  --end-bg:#040804; --end-h:#5a8050; --end-sub:#384a34;
+  --warn-low-bg:#1a2a18; --warn-mid-bg:#20281a; --warn-high-bg:#26201a;
+  --pulse-peak:#2c241e;
+  --dead-bg:#08100a; --dead-text:#1e2e1a;
+  --end-bg:#08100a; --end-h:#5a8050; --end-sub:#384a34;
   --streak-hot:#d86838; --chaos-c:#5a9a58; --warmup-c:#c87858; --bd-dot:#d86848;
 }
 
@@ -179,6 +182,39 @@ body.scheme-meridian.dark {
   --dead-bg:#040100; --dead-text:#2a0a06;
   --end-bg:#040100; --end-h:#a02010; --end-sub:#6a1008;
   --streak-hot:#f04018; --chaos-c:#d03818; --warmup-c:#c03818; --bd-dot:#d04828;
+}
+
+/* ── VOID ──
+   Light: pale steel-blue field. Cool, clinical, deliberate.
+   Dark:  near-black with electric blue. Maximum sensory reduction for
+   hyperfocus — the only scheme where the dark accent is cooler than the
+   primary, because hyperfocus tunnels want continuity, not celebration. */
+body.scheme-void {
+  --bg:#edf2f8; --text:#0e1828; --muted:#4e6882;
+  --danger-low:#b89020; --danger-mid:#b06020; --danger-high:#a03020;
+  --flow:#2868c0; --flow-bg:#e2ecf6; --idea-bg:#081632;
+  --peace-bg:#e8f0f8; --peace-text:#0e1828; --peace-muted:#4e6882; --peace-accent:#3a6aaa;
+  --border-subtle:rgba(14,24,40,.12); --border-med:rgba(14,24,40,.18);
+  --surface-hover:rgba(14,24,40,.05); --surface-active:rgba(14,24,40,.03);
+  --toggle-track:rgba(14,24,40,.14);
+  --warn-low-bg:#dde8f4; --warn-mid-bg:#d0dded; --warn-high-bg:#c8d0e8;
+  --pulse-peak:#bcc8e0;
+  --dead-bg:#04060e; --dead-text:#1a2438;
+  --end-bg:#03050e; --end-h:#3a5882; --end-sub:#1e3260;
+  --streak-hot:#2a78d4; --chaos-c:#4a6898; --warmup-c:#3a7888; --bd-dot:#2868c0;
+}
+body.scheme-void.dark {
+  --bg:#0e0e12; --text:#c4cfdd; --muted:#3a4458;
+  --flow:#5a9ae0; --flow-bg:#0a0e18;
+  --peace-bg:#0c1018; --peace-text:#b8c8dc; --peace-muted:#344058; --peace-accent:#6aa4e0;
+  --border-subtle:rgba(160,196,255,.10); --border-med:rgba(160,196,255,.16);
+  --surface-hover:rgba(160,196,255,.06); --surface-active:rgba(160,196,255,.04);
+  --toggle-track:rgba(160,196,255,.16);
+  --warn-low-bg:#101420; --warn-mid-bg:#14181e; --warn-high-bg:#181420;
+  --pulse-peak:#1e1828;
+  --dead-bg:#04040a; --dead-text:#14182a;
+  --end-bg:#03030a; --end-h:#3a5882; --end-sub:#1e3260;
+  --streak-hot:#5a9ae0; --chaos-c:#4a6898; --warmup-c:#5a9898; --bd-dot:#5a9ae0;
 }
 
 /* ── Parchment dark — warm candlelit, differentiated from Ocean ──
@@ -580,7 +616,7 @@ body.dead #editor { color:var(--dead-text); opacity:.3; }
   display:flex; align-items:center; gap:18px; justify-content:center;
   max-width:360px; margin:0 auto 32px;
 }
-.volume-row .volume-label {
+.volume-label {
   font-family:'EB Garamond',serif; font-size:11px; letter-spacing:.18em;
   text-transform:uppercase; color:var(--muted); white-space:nowrap;
 }
@@ -960,7 +996,12 @@ body.dark .size-btn.selected { background:var(--text); color:var(--bg); }
 .font-btn[data-font="literata"]  { font-family:'Literata',serif; }
 
 /* ── Scheme swatches ── */
-#scheme-opts { display:flex; gap:10px; justify-content:center; }
+#scheme-opts { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+#scheme-name {
+  font-family:'Lora',serif; font-style:italic; font-size:12px;
+  color:var(--muted); text-align:center; margin-top:10px;
+  min-height:16px; transition:color .2s;
+}
 .scheme-btn {
   width:38px; height:38px; border-radius:50%; padding:0;
   border:2px solid var(--border-med); background:transparent;
@@ -1192,6 +1233,7 @@ body.keyboard-open #danger-bar-wrap { padding-top:6px; }
         <button class="ambient-btn" data-ambient="brown">Brown</button>
         <button class="ambient-btn" data-ambient="pink">Pink</button>
         <button class="ambient-btn" data-ambient="rain">Rain</button>
+        <button class="ambient-btn" data-ambient="storm">Storm</button>
       </div>
     </div>
     <div class="volume-row" id="ambient-volume-row">
@@ -1210,7 +1252,9 @@ body.keyboard-open #danger-bar-wrap { padding-top:6px; }
           <button class="scheme-btn" data-scheme="scheme-ember" title="Ember"><span class="scheme-swatch" style="background:linear-gradient(135deg,#f4ede4 50%,#2e1e14 50%)"></span></button>
           <button class="scheme-btn" data-scheme="scheme-ink" title="Ink"><span class="scheme-swatch" style="background:linear-gradient(135deg,#f0f0f0 50%,#111111 50%)"></span></button>
           <button class="scheme-btn" data-scheme="scheme-meridian" title="Meridian"><span class="scheme-swatch" style="background:linear-gradient(135deg,#e8dcc0 50%,#0e0402 50%)"></span></button>
+          <button class="scheme-btn" data-scheme="scheme-void" title="Void"><span class="scheme-swatch" style="background:linear-gradient(135deg,#dce8f4 50%,#0e0e12 50%)"></span></button>
         </div>
+        <div id="scheme-name">Parchment</div>
       </div>
       <div class="font-group">
         <span class="choice-label">Typeface</span>
@@ -1496,11 +1540,18 @@ function playIdeaPing(){
   }catch(e){}
 }
 
-// Ambient sound — synthesized brown/pink noise or filtered noise for rain.
-// Runs as a looped BufferSource through a gain node so volume can be adjusted live.
-let ambientNode=null, ambientGain=null, ambientFilter=null;
+// Ambient sound — synthesized brown/pink noise, filtered noise for rain,
+// or an external audio file (storm) routed through the same gain node.
+let ambientNode=null, ambientGain=null, ambientFilter=null, ambientAudioEl=null, ambientMediaSource=null;
 let ambientType = localStorage.getItem('wod_ambient') || 'off';
 let ambientVolume = Math.max(0, Math.min(100, parseInt(localStorage.getItem('wod_ambient_vol')) || 40)) / 100;
+
+// File-based ambient sources — streamed as <audio> elements, routed through Web Audio.
+// GitHub (raw.githubusercontent.com) serves static files with permissive CORS, so
+// createMediaElementSource can tap the stream and run it through our gain node.
+const AMBIENT_FILES = {
+  storm: 'https://raw.githubusercontent.com/neilmichaelkirk91/breakthrough/main/storm%20clip.mp3'
+};
 
 function createNoiseBuffer(ctx, type){
   const bufferSize = 4 * ctx.sampleRate; // 4-second loop
@@ -1534,6 +1585,11 @@ function createNoiseBuffer(ctx, type){
   return buffer;
 }
 
+// Gain multiplier per source type:
+//   Synthesized noise is LOUD by nature — needs heavy attenuation.
+//   Mp3 files are usually mastered quieter — need near-unity gain.
+const ambientMult = () => AMBIENT_FILES[ambientType] ? 1.0 : 0.2;
+
 function startAmbient(){
   if(ambientType === 'off') return;
   initAudio();
@@ -1541,7 +1597,26 @@ function startAmbient(){
   if(audioCtx.state === 'suspended') audioCtx.resume();
   stopAmbient();
   ambientGain = audioCtx.createGain();
-  ambientGain.gain.value = ambientVolume * 0.2;
+  ambientGain.gain.value = ambientVolume * ambientMult();
+  ambientGain.connect(audioCtx.destination);
+
+  if(AMBIENT_FILES[ambientType]){
+    // File-based source (e.g. storm) — stream via <audio>, route through gain.
+    ambientAudioEl = new Audio(AMBIENT_FILES[ambientType]);
+    ambientAudioEl.loop = true;
+    ambientAudioEl.crossOrigin = 'anonymous';
+    try {
+      ambientMediaSource = audioCtx.createMediaElementSource(ambientAudioEl);
+      ambientMediaSource.connect(ambientGain);
+    } catch(e){
+      // CORS prevented Web Audio routing — fall back to native audio volume.
+      ambientAudioEl.volume = Math.min(1, ambientVolume * 0.4);
+    }
+    ambientAudioEl.play().catch(()=>{/* autoplay blocked or file not ready yet */});
+    return;
+  }
+
+  // Synthesized noise path (brown/pink/rain)
   const noiseType = ambientType === 'rain' ? 'white' : ambientType;
   ambientNode = audioCtx.createBufferSource();
   ambientNode.buffer = createNoiseBuffer(audioCtx, noiseType);
@@ -1556,20 +1631,25 @@ function startAmbient(){
   } else {
     ambientNode.connect(ambientGain);
   }
-  ambientGain.connect(audioCtx.destination);
   ambientNode.start();
 }
 
 function stopAmbient(){
   if(ambientNode){ try{ ambientNode.stop(); ambientNode.disconnect(); }catch(e){} ambientNode = null; }
   if(ambientFilter){ try{ ambientFilter.disconnect(); }catch(e){} ambientFilter = null; }
+  if(ambientMediaSource){ try{ ambientMediaSource.disconnect(); }catch(e){} ambientMediaSource = null; }
+  if(ambientAudioEl){ try{ ambientAudioEl.pause(); ambientAudioEl.src = ''; }catch(e){} ambientAudioEl = null; }
   if(ambientGain){ try{ ambientGain.disconnect(); }catch(e){} ambientGain = null; }
 }
 
 function setAmbientVolume(v){
   ambientVolume = v;
   if(ambientGain && audioCtx){
-    ambientGain.gain.setValueAtTime(v * 0.2, audioCtx.currentTime);
+    ambientGain.gain.setValueAtTime(v * ambientMult(), audioCtx.currentTime);
+  }
+  // Fallback path when CORS blocked Web Audio routing for <audio> sources
+  if(ambientAudioEl && !ambientMediaSource){
+    ambientAudioEl.volume = Math.min(1, v);
   }
 }
 
@@ -2028,7 +2108,7 @@ function setBodyClass(cls){
 
 function applyScheme(scheme){
   // Remove old scheme
-  document.body.classList.remove('scheme-ocean','scheme-flora','scheme-ember','scheme-ink','scheme-meridian');
+  document.body.classList.remove('scheme-ocean','scheme-flora','scheme-ember','scheme-ink','scheme-meridian','scheme-void');
   currentScheme = scheme;
   if(scheme) document.body.classList.add(scheme);
   localStorage.setItem('wod_scheme', scheme);
@@ -2049,11 +2129,18 @@ function applyScheme(scheme){
 
 // Scheme buttons
 (function(){
-  if(currentScheme) selectOnly('.scheme-btn', document.querySelector(`.scheme-btn[data-scheme="${currentScheme}"]`));
+  const nameEl = document.getElementById('scheme-name');
+  const showName = btn => { if(nameEl && btn) nameEl.textContent = btn.getAttribute('title') || ''; };
+  if(currentScheme){
+    const savedBtn = document.querySelector(`.scheme-btn[data-scheme="${currentScheme}"]`);
+    selectOnly('.scheme-btn', savedBtn);
+    showName(savedBtn);
+  }
   document.querySelectorAll('.scheme-btn').forEach(btn=>{
     btn.addEventListener('click',()=>{
       selectOnly('.scheme-btn', btn);
       applyScheme(btn.dataset.scheme);
+      showName(btn);
     });
   });
 })();
@@ -2210,7 +2297,7 @@ ambVolSlider.addEventListener('input', e=>{
   localStorage.setItem('wod_ambient_vol', v);
   // Moving the slider activates the currently-selected ambient type —
   // more intuitive than having to click a type button to trigger playback.
-  if(ambientType !== 'off' && !ambientNode) startAmbient();
+  if(ambientType !== 'off' && !ambientNode && !ambientAudioEl) startAmbient();
 });
 
 document.getElementById('toggle-paste').addEventListener('change',     e=>{ allowPaste=e.target.checked; storage.set('wod_paste', allowPaste); });
