@@ -867,6 +867,35 @@ body.dark #death-confirm { background:rgba(6,8,16,.95); }
   color:var(--flow); margin-top:6px; min-height:18px;
 }
 
+/* ── Emergency exit (Break Through mode only) ──
+   Top-left red button. Visible only during an active die-mode session.
+   Saves the current text and returns to setup without counting as a death. */
+#emergency-btn {
+  /* z-index above #death-confirm (190) so it stays clickable during the
+     3-second "Still there?" window — that's exactly when you'd want to bail and save. */
+  position:fixed; top:20px; left:24px; z-index:200;
+  display:none; align-items:center; justify-content:center;
+  font-family:'EB Garamond',serif; font-size:11px; letter-spacing:.18em;
+  text-transform:uppercase; font-weight:500;
+  padding:8px 14px; border-radius:3px; cursor:pointer;
+  background:rgba(184,48,48,.9); color:#fff;
+  border:1px solid rgba(184,48,48,1);
+  transition:background .2s, transform .15s, box-shadow .2s;
+  box-shadow:0 1px 4px rgba(184,48,48,.25);
+}
+#emergency-btn.visible { display:inline-flex; }
+#emergency-btn:hover { background:rgba(184,48,48,1); transform:scale(1.04); box-shadow:0 2px 10px rgba(184,48,48,.45); }
+/* Nudge topbar's left content right when the emergency button is showing.
+   Uses a body class (not :has()) for broader browser support and repaint stability. */
+body.has-emergency #topbar { padding-left:140px; }
+@media (max-width:600px) {
+  body.has-emergency #topbar { padding-left:130px; }
+}
+@media (max-width:380px) {
+  #emergency-btn { top:14px; left:14px; font-size:10px; padding:7px 10px; letter-spacing:.15em; }
+  body.has-emergency #topbar { padding-left:120px; }
+}
+
 /* ── Dark mode toggle ── */
 #dark-toggle {
   position:fixed; top:20px; right:24px; z-index:110;
@@ -1130,16 +1159,6 @@ body.keyboard-open #danger-bar-wrap { padding-top:6px; }
   <div id="options-panel">
     <div class="toggle-row">
       <label class="toggle-item">
-        <input type="checkbox" id="toggle-warmup" checked>
-        <div class="toggle-track"><div class="toggle-thumb"></div></div>
-        <span class="toggle-label">Warmup</span>
-      </label>
-      <label class="toggle-item">
-        <input type="checkbox" id="toggle-distraction" checked>
-        <div class="toggle-track"><div class="toggle-thumb"></div></div>
-        <span class="toggle-label">Distraction blocker</span>
-      </label>
-      <label class="toggle-item">
         <input type="checkbox" id="toggle-sound" checked>
         <div class="toggle-track"><div class="toggle-thumb"></div></div>
         <span class="toggle-label">Typing sounds</span>
@@ -1157,7 +1176,7 @@ body.keyboard-open #danger-bar-wrap { padding-top:6px; }
     </div>
     <div class="volume-row">
       <span class="volume-label">Typing volume</span>
-      <input type="range" id="volume-slider" min="0" max="200" value="100">
+      <input type="range" id="volume-slider" min="0" max="300" value="100">
       <span class="volume-value" id="volume-value">100</span>
     </div>
     <div class="ambient-row">
@@ -1213,12 +1232,15 @@ body.keyboard-open #danger-bar-wrap { padding-top:6px; }
 
     <p class="options-note">
       Warmup eases activation — grace starts wide, tightens over 90s.<br>
-      Chaos mode blocks cursor movement and limits backspace to the current word.<br>
+      Chaos mode blocks cursor movement and limits backspace.<br>
       Cmd+I captures ideas mid-session without breaking your flow.
     </p>
   </div>
 
 </div>
+
+<!-- Emergency button — sibling of #setup and #app so it isn't affected by their opacity/hidden states -->
+<button id="emergency-btn" title="Stop the session and save your work — for when you're interrupted" aria-label="Emergency exit">Emergency</button>
 
 <!-- ══ MAIN APP ══ -->
 <div id="app">
@@ -1296,7 +1318,7 @@ body.keyboard-open #danger-bar-wrap { padding-top:6px; }
 
 <!-- ══ WIN SCREEN ══ -->
 <div id="win-screen">
-  <h2>Done.</h2>
+  <h2 id="win-heading">Done.</h2>
   <p class="win-stats"  id="win-stats"></p>
   <p class="win-streak" id="win-streak-el"></p>
   <p class="win-wpm"    id="win-wpm"></p>
@@ -1442,7 +1464,7 @@ function getCurrentStreak(){
 //  AUDIO
 // ══════════════════════════════════════════════
 let audioCtx=null, useSound=true;
-let fxVolume = Math.max(0, Math.min(200, parseInt(localStorage.getItem('wod_volume')) || 100)) / 100;
+let fxVolume = Math.max(0, Math.min(300, parseInt(localStorage.getItem('wod_volume')) || 100)) / 100;
 function initAudio(){ if(audioCtx)return; audioCtx=new(window.AudioContext||window.webkitAudioContext)(); }
 
 function playKeyClick(dangerPct=0){
@@ -1940,7 +1962,8 @@ document.getElementById('options-toggle').addEventListener('click',()=>{
 //  CORE STATE
 // ══════════════════════════════════════════════
 let mode='time', goalVal=5, gracePeriod=5;
-let useWarmup=true, useDistraction=true;
+// Warmup and distraction blocker are baked-in defaults (no longer user-toggleable).
+const useWarmup=true, useDistraction=true;
 let running=false, dead=false, won=false;
 let lastKeystroke=0, sessionStart=0;
 let goalTimer=null, dangerTimer=null, timeRemaining=0;
@@ -1976,6 +1999,7 @@ const distractionTimerEl =document.getElementById('distraction-timer');
 const intentionGhost     =document.getElementById('intention-ghost');
 const intentionInput     =document.getElementById('intention-input');
 const cmdHint            =document.getElementById('cmd-hint');
+const emergencyBtn       =document.getElementById('emergency-btn');
 
 // Init streak on setup
 (function(){
@@ -2127,8 +2151,6 @@ document.querySelectorAll('#grace-opts .opt-btn').forEach(btn=>{
   });
 });
 
-document.getElementById('toggle-warmup').addEventListener('change',    e=>{ useWarmup=e.target.checked; });
-document.getElementById('toggle-distraction').addEventListener('change',e=>{ useDistraction=e.target.checked; });
 document.getElementById('toggle-sound').addEventListener('change',      e=>{ useSound=e.target.checked; volSlider.disabled=!e.target.checked; });
 
 // Typing volume slider
@@ -2181,6 +2203,9 @@ ambVolSlider.addEventListener('input', e=>{
   setAmbientVolume(v/100);
   ambVolValue.textContent = v;
   localStorage.setItem('wod_ambient_vol', v);
+  // Moving the slider activates the currently-selected ambient type —
+  // more intuitive than having to click a type button to trigger playback.
+  if(ambientType !== 'off' && !ambientNode) startAmbient();
 });
 
 document.getElementById('toggle-paste').addEventListener('change',     e=>{ allowPaste=e.target.checked; });
@@ -2216,6 +2241,13 @@ function startSession(){
   ideaCountEl.classList.remove('visible'); distractionOverlay.classList.remove('show');
   cmdHint.classList.add('session-active');
   document.getElementById('cmd-hint-thesaurus').style.display = peaceMode ? 'inline' : 'none';
+  if(peaceMode){
+    emergencyBtn.classList.remove('visible');
+    document.body.classList.remove('has-emergency');
+  } else {
+    emergencyBtn.classList.add('visible');
+    document.body.classList.add('has-emergency');
+  }
   editor.placeholder = peaceMode ? 'Begin writing.' : "Begin writing. Don't stop.";
 
   const intention=intentionInput.value.trim();
@@ -2433,6 +2465,7 @@ function triggerWin(){
     text:editor.value
   };
   document.getElementById('win-note-input').value='';
+  document.getElementById('win-heading').textContent='Done.';
 
   winStats.textContent=wc+' words · '+fmtTime(elapsed);
   winStreakEl.textContent=newStreak===1?'First session complete.':newStreak+' days in a row.';
@@ -2462,7 +2495,53 @@ function hideSessionOverlays(){
   thesOverlay.classList.remove('show'); thesOverlayOpen = false;
   intentionGhost.classList.remove('visible');
   cmdHint.classList.remove('session-active');
+  emergencyBtn.classList.remove('visible');
+  document.body.classList.remove('has-emergency');
 }
+
+// Emergency exit — for when the user has to stop mid-session.
+// Shows the same review screen a completed session uses (Download / Read & copy /
+// Your writing / Again / Change settings), so the user can save the work before leaving.
+// Flagged as won=true to prevent death/double-fire; the pendingSession is tagged
+// outcome='emergency' so it counts toward totals but not streak.
+function emergencyExit(){
+  if(!running || dead || won) return;
+  won = true; running = false;
+  clearAll();
+  setBodyClass(''); barFill.style.width='0%';
+  editor.placeholder = "Begin writing. Don't stop.";
+  topbar.classList.add('fade'); flowIndicator.classList.remove('visible');
+
+  const wc = countWords(editor.value);
+  const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+  const avgWpm = wpmSamples.length > 0
+    ? Math.round(wpmSamples.reduce((a,s)=>a+s.wpm,0)/wpmSamples.length)
+    : 0;
+
+  pendingSession = {
+    words: wc, seconds: elapsed, avgWpm, peakWpm,
+    date: Date.now(), hour: new Date().getHours(),
+    mode: 'die', outcome: 'emergency',
+    text: editor.value
+  };
+  document.getElementById('win-note-input').value = '';
+  document.getElementById('win-heading').textContent = 'Saved.';
+
+  winStats.textContent = wc + ' words · ' + fmtTime(elapsed);
+  winStreakEl.textContent = "Your work is here — save or copy it before you leave.";
+  winWpmEl.textContent = avgWpm > 0 ? 'avg ' + avgWpm + ' wpm · peak ' + peakWpm + ' wpm' : '';
+
+  if(capturedIdeas.length > 0){
+    winIdeasList.innerHTML = '';
+    capturedIdeas.forEach(idea => { const li = document.createElement('li'); li.textContent = idea; winIdeasList.appendChild(li); });
+    winIdeasEl.style.display = 'block';
+  } else {
+    winIdeasEl.style.display = 'none';
+  }
+
+  setTimeout(() => winScreen.classList.add('show'), 200);
+}
+document.getElementById('emergency-btn').addEventListener('click', emergencyExit);
 
 function clearAll(){
   clearInterval(goalTimer); clearInterval(dangerTimer); clearInterval(distractionInterval);
